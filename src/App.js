@@ -61,7 +61,8 @@ class App extends Component {
     super(props) 
       
     this.state = {
-      todos: todosList,
+      todos: todosList
+      
     };
   } 
   render() {
@@ -71,7 +72,8 @@ class App extends Component {
         <Switch>
           <Route exact path = "/">
             <div className = "header">   
-              <Header addTodo = {this.addTodo} />
+              <Header                 
+                addTodo = {this.addTodo} />
             </div>
               <TodoList 
                 todos = {this.state.todos} 
@@ -95,28 +97,38 @@ class App extends Component {
           </Route> 
         </Switch>         
           <Footer
-            completed = {this.state.todos.completed} 
+            remainder = {this.showRemainder} 
             clearCompleted = {this.clearCompleted} />
         </Section>
       </div>
     );
-  }  
+  }
   
-  addTodo = (event) => {    
-    if (event.key === "Enter") {       
+  showRemainder = () => {
+    let remainder = 0;
+    this.state.todos.map((todo) => {
+      if (!todo.completed) {
+        remainder += 1;
+      }
+    })
+    return remainder;
+  }
+  
+  addTodo = (event) => {
+    if (event.key === "Enter") {          
       let newTodo = {
-        "userId": 1,
-        "id": uuidv4(),
-        "title": event.target.value,
-        "completed": false
-      }        
+       "userId": 1,
+       "id": uuidv4(),
+       "title": event.target.value,
+       "completed": false
+      }    
       this.setState((state) => {
         let allTodos = [...state.todos, newTodo]    
         return {          
           todos: allTodos
         }         
       })
-    }       
+    }           
   }
   
   toggle = (id) => {         

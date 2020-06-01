@@ -1,10 +1,60 @@
 import React, { Component } from "react";
+import { Route, Switch } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import todosList from "./todos.json";
 import { Section } from './components/section/Section'
 import Header from './components/header/Header'
+import ActiveHeader from './components/activeHeader/ActiveHeader'
+import CompletedHeader from './components/completedHeader/CompletedHeader'
 import Footer from './components/footer/Footer'
 import TodoList from './components/todolist/TodoList';
-import { Route, Switch } from 'react-router-dom';
+import TodoItem from './components/todoitem/TodoItem'
+
+const Active = (props) => {
+  let activeTodos = [];
+  props.todos.map((todo) => {
+    if (!todo.completed) {
+      activeTodos.push(todo)
+    }
+  })
+  return (    
+    <section className = "main">
+      <ul className = "todo-list">
+        {activeTodos.map((todo) => (
+          <TodoItem 
+            userId = {todo.userId}
+            id = {todo.id}
+            title = {todo.title}
+            completed = {todo.completed}
+          />
+        ))}
+      </ul>
+    </section>    
+  )  
+} 
+
+const Completed = (props) => {
+  let completedTodos = [];
+  props.todos.map((todo) => {
+    if (todo.completed) {
+      completedTodos.push(todo)
+    }
+  })
+  return (
+    <section className = "main">
+      <ul className = "todo-list">
+        {completedTodos.map((todo) => (
+          <TodoItem 
+            userId = {todo.userId}
+            id = {todo.id}
+            title = {todo.title}
+            completed = {todo.completed}
+          />
+      ))}
+    </ul>
+  </section>
+  )   
+} 
 
 class App extends Component {
   constructor(props) {
@@ -17,20 +67,36 @@ class App extends Component {
   render() {
     return (
       <div className = "todoapp">
-        <Section>
-          <div className = "header">   
-            <Header addTodo = {this.addTodo} />
-          </div>
+        <Section>          
         <Switch>
-          <Route path = "/active" />
-          <Route path = "/completed" />
-        </Switch>        
-          <TodoList 
-            todos = {this.state.todos} 
-            toggle = {this.toggle} 
-            destroy = {this.destroy} 
-          />
-          <Footer clearCompleted = {this.clearCompleted} />
+          <Route exact path = "/">
+            <div className = "header">   
+              <Header addTodo = {this.addTodo} />
+            </div>
+              <TodoList 
+                todos = {this.state.todos} 
+                toggle = {this.toggle} 
+                destroy = {this.destroy} 
+              /> 
+          </Route>
+          <Route path = "/active">
+            <div className = "header">   
+              <ActiveHeader addTodo = {this.addTodo} />
+            </div>
+            <Active todos = {this.state.todos} 
+            />
+          </Route>  
+          <Route path = "/completed">
+            <div className = "header">   
+              <CompletedHeader addTodo = {this.addTodo} />
+            </div>
+            <Completed todos = {this.state.todos}
+            />
+          </Route> 
+        </Switch>         
+          <Footer
+            completed = {this.state.todos.completed} 
+            clearCompleted = {this.clearCompleted} />
         </Section>
       </div>
     );
@@ -40,15 +106,13 @@ class App extends Component {
     if (event.key === "Enter") {       
       let newTodo = {
         "userId": 1,
-        "id": Math.random() * 25619,
+        "id": uuidv4(),
         "title": event.target.value,
         "completed": false
-      }      
-      let allTodos = this.state.todos.slice()
-      allTodos.push(newTodo); 
+      }        
       this.setState((state) => {
-        return {
-          ...state,
+        let allTodos = [...state.todos, newTodo]    
+        return {          
           todos: allTodos
         }         
       })

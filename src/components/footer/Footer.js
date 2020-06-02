@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Link} from "react-router-dom";
+import {NavLink} from "react-router-dom";
 
 class Footer extends Component {
     render() {
@@ -10,11 +10,15 @@ class Footer extends Component {
                 <strong>{this.props.remainder()}</strong> item(s) left
               </span>
               <ul className="filters">
-                <Link to = "/">All</Link>
-                {"  "} 
-                <Link to ="/active">Active</Link>
-                {"  "} 
-                <Link to = "/completed">Completed </Link>
+                <li>
+                  <NavLink exact activeClassName = "selected" to="/">All</NavLink>
+                </li>
+                <li>
+                  <NavLink activeClassName = "selected" to="/active">Active</NavLink>
+                </li>
+                <li>
+                  <NavLink activeClassName= "selected" to ="/completed">Completed</NavLink>
+                </li>
               </ul>
               <button 
                 onClick = {this.props.clearCompleted} 
